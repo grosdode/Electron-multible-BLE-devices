@@ -73,6 +73,7 @@ function createBLEDevicesWindow() {
 
   BLEDevicesWindow.on('close', function () {
     BLEDevicesWindow = null;    
+    callbackForBluetoothEvent("");
   })
 }
 
