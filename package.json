@@ -1,0 +1,14 @@
+{
+  "name": "electron_multi_ble_devices",
+  "version": "1.0.0",
+  "description": "Search for BLE devices and choose one of a List",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "grosdode",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^18.2.0"
+  }
+}
