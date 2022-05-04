@@ -2,6 +2,7 @@ const BLEDevicesList = document.getElementById("DeviceList");
 
 let BLEDevicesListarray = [];
 
+// close windwos if user does not choose a device
 setInterval(() => {
    window.api.send("BLEScannFinished", "no Device");
    window.close();
@@ -9,7 +10,7 @@ setInterval(() => {
 
 function itemDone(element) {
    console.log(element.id);
-   window.api.send("BLEScannFinished", element.id);
+   window.api.send("BLEScannFinished", element.id); // write back the device ID
    window.close();
 }
 
@@ -47,6 +48,10 @@ window.api.receive("BLEScannElement", (data) => {
   console.log(data);
 });
 
+// poll for new devices
+// just push them from inside mainWindow.webContents.on("select-bluetooth-device", ...
+// can cause problems if there is only one device and it was pushed to the window 
+// faster than the window is created, can be solved with a promise?
 setInterval(() => {
   window.api.send("getBLEDeviceList", "getDevices");
 }, 1000);

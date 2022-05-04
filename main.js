@@ -5,8 +5,7 @@ let mainWindow
 let BLEDevicesWindow;
 let BLEDevicesList=[];
 
-let BLEScannFinished = false;
-let BLEDevicesChoosen;
+let callbackForBluetoothEvent = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -18,44 +17,37 @@ function createWindow() {
     "select-bluetooth-device",
     (event, deviceList, callback) => 
     {
-      event.preventDefault();
-      
+      event.preventDefault(); // do not choose the first one
 
-      if (deviceList && deviceList.length > 0) 
-      {
-        deviceList.forEach(element => 
-        {
-          if (!element.deviceName.includes('Unbekanntes oder nicht unterstütztes Gerät')) 
-          {
-            if (BLEDevicesList.length > 0) 
-            {
-              if (BLEDevicesList.findIndex(object => object.deviceId === element.deviceId) === -1) 
-              {
+      if (deviceList && deviceList.length > 0) {  // find devices?
+        deviceList.forEach((element) => {         
+          if (
+            !element.deviceName.includes(                  // reduce noise by filter Devices without name
+              "Unbekanntes oder nicht unterstütztes Gerät" // better use filter options in renderer.js
+            ) &&
+            !element.deviceName.includes("Unknown or Unsupported Device") // better use filter options in renderer.js
+          ) {
+            if (BLEDevicesList.length > 0) {  // BLEDevicesList not empty?
+              if (
+                BLEDevicesList.findIndex(     // element is not already in BLEDevicesList
+                  (object) => object.deviceId === element.deviceId
+                ) === -1
+              ) {
                 BLEDevicesList.push(element);
                 console.log(BLEDevicesList);
               }
-            }else
-            {
+            } else {
               BLEDevicesList.push(element);
               console.log(BLEDevicesList);
               if (!BLEDevicesWindow) {
-                createBLEDevicesWindow();
-                BLEScannFinished = false;
+                createBLEDevicesWindow(); // open new window to show devices
               }
             }
           }
         });
       }
 
-      if (BLEScannFinished) {
-        if (BLEDevicesChoosen) {
-          callback(BLEDevicesChoosen.deviceId);
-        }
-        else
-        {
-          callback('');
-        }
-      }
+      callbackForBluetoothEvent = callback; // to make it accessible outside https://technoteshelp.com/electron-web-bluetooth-api-requestdevice-error/
     }
   );
 
@@ -81,7 +73,6 @@ function createBLEDevicesWindow() {
 
   BLEDevicesWindow.on('close', function () {
     BLEDevicesWindow = null;    
-    BLEScannFinished = true;
   })
 }
 
@@ -106,8 +97,8 @@ ipcMain.on("toMain", (event, args) => {
 ipcMain.on("BLEScannFinished", (event, args) => {
   console.log(args);
   console.log(BLEDevicesList.find((item) => item.deviceId === args));
-  BLEDevicesChoosen = BLEDevicesList.find((item) => item.deviceId === args);
-  BLEScannFinished = true;
+  let BLEDevicesChoosen = BLEDevicesList.find((item) => item.deviceId === args);
+  callbackForBluetoothEvent(BLEDevicesChoosen.deviceId);
 });
 
 ipcMain.on("getBLEDeviceList", (event, args) => {
