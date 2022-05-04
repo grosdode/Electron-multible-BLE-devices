@@ -4,7 +4,6 @@ let BLEDevicesListarray = [];
 
 // close windwos if user does not choose a device
 setInterval(() => {
-   window.api.send("BLEScannFinished", "no Device");
    window.close();
 }, 120000);
 
