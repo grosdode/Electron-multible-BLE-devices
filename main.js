@@ -56,8 +56,8 @@ function createWindow() {
 
 function createBLEDevicesWindow() {
   BLEDevicesWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 300,
+    height: 400,
     parent: mainWindow,
     title: "Bluetooth Devices near by",
     modal: true,
@@ -98,7 +98,8 @@ ipcMain.on("BLEScannFinished", (event, args) => {
   console.log(args);
   console.log(BLEDevicesList.find((item) => item.deviceId === args));
   let BLEDevicesChoosen = BLEDevicesList.find((item) => item.deviceId === args);
-  callbackForBluetoothEvent(BLEDevicesChoosen.deviceId);
+  if (BLEDevicesChoosen) callbackForBluetoothEvent(BLEDevicesChoosen.deviceId);
+  else callbackForBluetoothEvent("");
 });
 
 ipcMain.on("getBLEDeviceList", (event, args) => {
