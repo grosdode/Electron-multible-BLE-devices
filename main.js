@@ -74,6 +74,7 @@ function createBLEDevicesWindow() {
   BLEDevicesWindow.on('close', function () {
     BLEDevicesWindow = null;    
     callbackForBluetoothEvent("");
+    BLEDevicesList = [];
   })
 }
 
@@ -101,6 +102,7 @@ ipcMain.on("BLEScannFinished", (event, args) => {
   let BLEDevicesChoosen = BLEDevicesList.find((item) => item.deviceId === args);
   if (BLEDevicesChoosen) callbackForBluetoothEvent(BLEDevicesChoosen.deviceId);
   else callbackForBluetoothEvent("");
+  BLEDevicesList = [];
 });
 
 ipcMain.on("getBLEDeviceList", (event, args) => {
